@@ -11,12 +11,6 @@ import { vOnClickOutside } from '@vueuse/components';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 import wootConstants from 'dashboard/constants/globals';
 
-defineProps({
-  conversationInboxType: {
-    type: String,
-    default: '',
-  },
-});
 
 const store = useStore();
 const { uiSettings, updateUISettings } = useUISettings();
@@ -28,6 +22,14 @@ const assistants = useMapGetter('captainAssistants/getRecords');
 const uiFlags = useMapGetter('captainAssistants/getUIFlags');
 const inboxAssistant = useMapGetter('getCopilotAssistant');
 const currentChat = useMapGetter('getSelectedChat');
+
+const conversationInboxType = computed(() => {
+  const inboxId = currentChat.value?.inbox_id;
+  if (!inboxId) return '';
+  const inbox = store.getters['inboxes/getInbox'](inboxId);
+  return inbox?.channel_type || '';
+});
+
 
 const isSmallScreen = computed(
   () => windowWidth.value < wootConstants.SMALL_SCREEN_BREAKPOINT
